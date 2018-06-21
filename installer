@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+
+import sys,os,subprocess,pprint,shutil
+
+# EXT_CODE stores the return code of the subprocess triggered 
+# if it is not equal to zero (0) the script exits marking the build as failure 
+EXT_CODE = 1
+
+# arguements stores the argv and installs respective applications in this node 
+arguements = sys.argv[1:]
+print(arguements)
+
+if arguements[0]=="Update-Node":
+
+# The following command updates and upgrades the Node
+ EXT_CODE = subprocess.Popen(["sudo apt-get update"],shell=True).wait()
+ EXT_CODE = subprocess.Popen(["sudo apt-get -y upgrade"],shell=True).wait()
+
+elif arguements[0] == "maven":
+
+# The following command installs maven (just for example)
+ EXT_CODE = subprocess.Popen(["sudo apt-get install -y maven"],shell=True).wait()
+ EXT_CODE =  subprocess.Popen(["echo 'successful'"],shell=True).wait()
+
+elif arguements[0] == "udeploy-agent":
+
+# The following code installs udeploy-agent in this particular node and
+# starts the agent which brings it online in Udeploy-server
+ os.chdir("/tmp")
+ if os.getcwd() == "/tmp":
+  EXT_CODE = subprocess.Popen(["sudo curl -L -O http://35.200.168.20:8080/tools/ibm-ucd-agent.zip"],shell=True).wait()
+  EXT_CODE = subprocess.Popen(["sudo unzip ibm-ucd-agent.zip"],shell=True).wait()
+  os.chdir("/tmp/ibm-ucd-agent-install")
+  if os.getcwd() != "/tmp/ibm-ucd-agent-install":
+   EXT_CODE = subprocess.Popen(["echo 'No such directory found----download failed!'"],shell=True).wait()
+   sys.exit(1)
+  else:
+   EXT_CODE = subprocess.Popen(["sudo git clone https://github.com/EdwinPhilip/udeploy-agent-property.git"],shell=True).wait()
+   EXT_CODE = subprocess.Popen(["sudo ./install-agent-from-file.sh ./udeploy-agent-property/example.agent.install.properties"],shell=True).wait()
+   os.remove("/tmp/ibm-ucd-agent.zip")
+   shutil.rmtree("/tmp/ibm-ucd-agent-install")
+   os.chdir("/home/student/udeploy-agent/bin")
+   f = open("udeployagent.service","a+")
+   f.write("[UNIT]\n")
+   f.write("Description=Udeploy Agent start\n")
+   f.write("After=network.target auditd.service\n\n")
+   f.write("[Service]\n")
+   f.write("ExecStart=/home/student/udeploy-agent/bin/agent start\n")
+   f.write("KillMode=process\n")
+   f.write("Restart=on-failure\n\n")
+   f.write("[Install]\n")
+   f.write("WantedBy=multi-user.target\n")
+   f.write("Alias=uagent.service\n")
+   f.close()
+   os.chdir("/etc/systemd/system")
+   EXT_CODE = subprocess.Popen(["sudo cp /home/student/udeploy-agent/bin/udeployagent.service udeployagent.service"],shell=True).wait()
+   EXT_CODE = subprocess.Popen(["sudo systemctl daemon-reload"],shell=True).wait()
+   EXT_CODE = subprocess.Popen(["sudo systemctl enable udeployagent.service"],shell=True).wait()
+   EXT_CODE = subprocess.Popen(["sudo systemctl start udeployagent.service"],shell=True).wait()
+   #EXT_CODE = subprocess.Popen(["sudo ./agent start"],shell=True).wait()
+
+elif arguements[0] == "jboss-eap-6.4":
+
+# The following command clone jboss installer script from github and executes it
+  EXT_CODE = subprocess.Popen(["git clone https://github.com/EdwinPhilip/jboss.git"],shell=True).wait()
+  os.chdir("jboss/")
+  if os.getcwd() == "/home/student/jboss":
+   EXT_CODE = subprocess.Popen(["sudo ./install.sh"],shell=True).wait()
+
+if EXT_CODE != 0:
+   subprocess.Popen(["echo 'Agent download and installation failed...!'"],shell=True).wait()
+   sys.exit(1)
+
+# need for printing normal python print statements in console output
+sys.stdout.flush() 
