@@ -62,9 +62,10 @@ elif arguements[0] == "udeploy-agent":
 elif arguements[0] == "jboss-eap-6.4":
 
 # The following command clone jboss installer script from github and executes it
+  os.chdir("~")
   EXT_CODE = subprocess.Popen(["git clone https://github.com/EdwinPhilip/jboss.git"],shell=True).wait()
-  os.chdir("./jboss")
-  if os.getcwd() == "/home/student/jenkins-agent/jenkins/workspace/agent-1-install/jboss":
+  os.chdir("jboss/")
+  if os.getcwd() == "/home/student/jboss":
    EXT_CODE = subprocess.Popen(["sudo ./install.sh"],shell=True).wait()
 
 if EXT_CODE != 0:
