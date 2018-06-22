@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys,os,subprocess,pprint,shutil
+import sys,os,subprocess,pprint,shutil,fileinput
 
 # EXT_CODE stores the return code of the subprocess triggered 
 # if it is not equal to zero (0) the script exits marking the build as failure 
@@ -36,6 +36,11 @@ elif arguements[0] == "udeploy-agent":
    sys.exit(1)
   else:
    EXT_CODE = subprocess.Popen(["sudo git clone https://github.com/EdwinPhilip/udeploy-agent-property.git"],shell=True).wait()
+   f = fileinput.input("udeploy-agent-property/example.agent.install.properties",inplace=True)
+   agent_name = arguements[1]
+   for line in f:
+    line = line.replace("ibm-ucdagent-1",agent_name)
+    sys.stdout.write(line)
    EXT_CODE = subprocess.Popen(["sudo ./install-agent-from-file.sh udeploy-agent-property/example.agent.install.properties"],shell=True).wait()
    os.remove("/tmp/ibm-ucd-agent.zip")
    shutil.rmtree("/tmp/ibm-ucd-agent-install")
