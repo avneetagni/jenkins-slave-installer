@@ -36,7 +36,7 @@ elif arguements[0] == "udeploy-agent":
    sys.exit(1)
   else:
    EXT_CODE = subprocess.Popen(["sudo git clone https://github.com/EdwinPhilip/udeploy-agent-property.git"],shell=True).wait()
-   EXT_CODE = subprocess.Popen(["sudo ./install-agent-from-file.sh ./udeploy-agent-property/example.agent.install.properties"],shell=True).wait()
+   EXT_CODE = subprocess.Popen(["sudo ./install-agent-from-file.sh udeploy-agent-property/example.agent.install.properties"],shell=True).wait()
    os.remove("/tmp/ibm-ucd-agent.zip")
    shutil.rmtree("/tmp/ibm-ucd-agent-install")
    os.chdir("/home/student/udeploy-agent/bin")
