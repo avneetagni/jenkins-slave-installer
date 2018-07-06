@@ -28,7 +28,7 @@ elif arguements[0] == "udeploy-agent":
 # starts the agent which brings it online in Udeploy-server
  os.chdir("/tmp")
  if os.getcwd() == "/tmp":
-  EXT_CODE = subprocess.Popen(["sudo curl -L -O http://35.200.168.20:8080/tools/ibm-ucd-agent.zip"],shell=True).wait()
+  EXT_CODE = subprocess.Popen(["sudo curl -L -O http://35.187.210.241:8080/tools/ibm-ucd-agent.zip"],shell=True).wait()
   EXT_CODE = subprocess.Popen(["sudo unzip ibm-ucd-agent.zip"],shell=True).wait()
   os.chdir("/tmp/ibm-ucd-agent-install")
   if os.getcwd() != "/tmp/ibm-ucd-agent-install":
@@ -50,7 +50,7 @@ elif arguements[0] == "udeploy-agent":
    f.write("Description=Udeploy Agent start\n")
    f.write("After=network.target auditd.service\n\n")
    f.write("[Service]\n")
-   f.write("ExecStart=/home/student/udeploy-agent/bin/agent start\n")
+   f.write("ExecStart=/home/student/udeploy-agent/bin/agent run\n")
    f.write("KillMode=process\n")
    f.write("Restart=on-failure\n\n")
    f.write("[Install]\n")
